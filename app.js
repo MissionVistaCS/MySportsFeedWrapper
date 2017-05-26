@@ -11,6 +11,8 @@ client.registerMethod("getNHLActivePlayers", "https://www.mysportsfeeds.com/api/
 client.registerMethod("getNFLActivePlayers", "https://www.mysportsfeeds.com/api/feed/pull/nfl/2016-2017-regular/active_players.json", "GET");
 client.registerMethod("getNBAActivePlayers", "https://www.mysportsfeeds.com/api/feed/pull/nba/2016-2017-regular/active_players.json", "GET");
 
+client.registerMethod("getNFLInjuries", "https://www.mysportsfeeds.com/api/feed/pull/nfl/2016-2017-regular/player_injuries.json", "GET");
+
 module.exports = function (username, password) {
     args.headers["Authorization"] = "Basic " + Buffer.from(username + ':' + password).toString('base64');
 }
@@ -57,6 +59,16 @@ module.exports["NFL"] = {
             if (response.statusCode !== 200) return fn(response.statusCode);
 
             var obj = data.scoreboard.gameScore;
+
+            fn(false, obj);
+        });
+    },
+
+    getInjuries: function (fn) {
+        client.methods.getNFLInjuries(args, function (data, response) {
+            if (response.statusCode !== 200) return fn(response.statusCode);
+
+            var obj = data.playerinjuries.playerentry;
 
             fn(false, obj);
         });

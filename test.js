@@ -30,3 +30,12 @@ Yumyum.NFL.getScoreboard(function (err, result) {
     console.log(JSON.stringify(result));
     console.log('');
 });
+
+Yumyum.NFL.getInjuries(function (err, result) {
+    if (err) {
+        return console.log('Error occurred getInjuries: ' + err);
+    }
+
+    console.log(JSON.stringify(result));
+    console.log('');
+});
