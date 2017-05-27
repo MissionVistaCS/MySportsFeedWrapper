@@ -17,15 +17,13 @@ module.exports = function (username, password) {
     args.headers["Authorization"] = "Basic " + Buffer.from(username + ':' + password).toString('base64');
 }
 
-module.exports.MAX_PLAYERS = 10;
-
 module.exports["NHL"] = {
-    getActivePlayers: function (fn) {
+    getActivePlayers: function (max, fn) {
         client.methods.getNHLActivePlayers(args, function (data, response) {
             if (response.statusCode !== 200) return fn(response.statusCode);
 
             var obj = data.activeplayers.playerentry;
-            obj.length = module.exports.MAX_PLAYERS;
+            obj.length = max;
 
             fn(false, obj);
         });
@@ -33,19 +31,19 @@ module.exports["NHL"] = {
 }
 
 module.exports["NFL"] = {
-    getActivePlayers: function (fn) {
+    getActivePlayers: function (max, fn) {
         client.methods.getNFLActivePlayers(args, function (data, response) {
             if (response.statusCode !== 200) return fn(response.statusCode);
 
             var obj = data.activeplayers.playerentry;
-            obj.length = module.exports.MAX_PLAYERS;
+            obj.length = max;
 
             fn(false, obj);
         });
     },
 
-    getBoxScore: function (fn) {
-        client.methods.getNFLBoxScore(args, function (data, response) {
+    getBoxScore: function (id, fn) {
+        client.get('https://www.mysportsfeeds.com/api/feed/pull/nfl/2016-2017-regular/game_boxscore.json?gameid=' + id, args, function (data, response) {
             if (response.statusCode !== 200) return fn(response.statusCode);
 
             var obj = data.gameboxscore;
@@ -54,8 +52,8 @@ module.exports["NFL"] = {
         });
     },
 
-    getScoreboard: function (fn) {
-        client.methods.getNFLScoreboard(args, function (data, response) {
+    getScoreboard: function (date, fn) {
+        client.get('https://www.mysportsfeeds.com/api/feed/pull/nfl/2016-2017-regular/scoreboard.json?fordate=' + date, args, function (data, response) {
             if (response.statusCode !== 200) return fn(response.statusCode);
 
             var obj = data.scoreboard.gameScore;
@@ -72,24 +70,16 @@ module.exports["NFL"] = {
 
             fn(false, obj);
         });
-    },
-
-    setGame: function (id) {
-        client.registerMethod("getNFLBoxScore", "https://www.mysportsfeeds.com/api/feed/pull/nfl/2016-2017-regular/game_boxscore.json?gameid=" + id, "GET");
-    },
-
-    setDate: function (date) {
-        client.registerMethod("getNFLScoreboard", "https://www.mysportsfeeds.com/api/feed/pull/nfl/2016-2017-regular/scoreboard.json?fordate=" + date, "GET");
     }
 }
 
 module.exports["NBA"] = {
-    getActivePlayers: function (fn) {
+    getActivePlayers: function (max, fn) {
         client.methods.getNBAActivePlayers(args, function (data, response) {
             if (response.statusCode !== 200) return fn(response.statusCode);
 
             var obj = data.activeplayers.playerentry;
-            obj.length = module.exports.MAX_PLAYERS;
+            obj.length = max;
 
             fn(false, obj);
         });
